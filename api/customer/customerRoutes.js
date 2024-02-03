@@ -31,12 +31,13 @@ router.post('/getauction', (req, res) => {
 router.post('/auction', upload.array('file', 5), (req, res) => {
 	try {
 		const files = req.files;
-		console.log(req.body.closingdate)
 		const userId = req.body.userId;
 		const price = req.body.basePrice;
 		const description = req.body.auctionDescription;
-		const closedate = req.body.closingdate;
-		QUERY("INSERT INTO auction(userId,basePrice,description,closingDate) VALUES('" + userId + "','" + price + "','" + description + "','" + closedate + "')").then((response) => {
+		const closedate = new Date(req.body.closingdate);
+		const formattedDate = closedate.toISOString().slice(0, 19).replace('T', ' ')
+		console.log(formattedDate)
+		QUERY("INSERT INTO auction(userId,basePrice,description,closingDate) VALUES('" + userId + "','" + price + "','" + description + "','" + formattedDate + "')").then((response) => {
 			const auctionId = response.insertId;
 			files.forEach((file) => {
 				INSERT('images', '(auction_Id,img_name)', `(${auctionId},'${file.filename}')`)
