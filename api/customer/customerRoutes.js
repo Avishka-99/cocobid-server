@@ -36,8 +36,9 @@ router.post('/auction', upload.array('file', 5), async (req, res) => {
 		const description = req.body.auctionDescription;
 		const closedate = new Date(req.body.closingdate);
 		const formattedDate = closedate.toISOString().slice(0, 19).replace('T', ' ')
+		const city = req.body.city;
 		console.log(formattedDate)
-		QUERY("INSERT INTO auction(userId,basePrice,description,closingDate) VALUES('" + userId + "','" + price + "','" + description + "','" + formattedDate + "')").then((response) => {
+		QUERY("INSERT INTO auction(userId,basePrice,description,city,closingDate) VALUES('" + userId + "','" + price + "','" + description + "','" + city + "','" + formattedDate + "')").then((response) => {
 			const auctionId = response.insertId;
 			files.forEach((file) => {
 				INSERT('images', '(auction_Id,img_name)', `(${auctionId},'${file.filename}')`)
