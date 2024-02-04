@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 	},
 });
 const upload = multer({ storage: storage });
-router.post('/getauction', (req, res) => {
+router.post('/getauction', async (req, res) => {
 	const userId = req.body.userId;
 	SELECT_WHERE('auction', 'userId', userId).then((response) => {
 		console.log(response.length);
@@ -28,7 +28,7 @@ router.post('/getauction', (req, res) => {
 	})
 
 })
-router.post('/auction', upload.array('file', 5), (req, res) => {
+router.post('/auction', upload.array('file', 5), async (req, res) => {
 	try {
 		const files = req.files;
 		const userId = req.body.userId;
@@ -55,4 +55,47 @@ router.post('/createPost', upload.array('image', 5), async (req, res) => {
 
 	}
 });
+router.get('/getauctionimages/:id', async (req, res) => {
+	QUERY(`SELECT * FROM images WHERE auction_Id=${req.params.id}`).then((response) => {
+		res.send({ type: 'success', data: response })
+	})
+})
+router.get('/getauction/:id', async (req, res) => {
+	QUERY(`SELECT * FROM auction WHERE Id=${req.params.id}`).then((response) => {
+		res.send({ type: 'success', data: response })
+	})
+})
+router.get('/getbidinfo/:id', async (req, res) => {
+	QUERY(`SELECT MAX(bid) as max_bid, COUNT(*) AS total_bids FROM bids WHERE auction_Id=${req.params.id}`).then((response) => {
+		res.send({ type: 'success', data: response })
+	})
+})
+router.get('/getalluserbids/:id', async (req, res) => {
+	QUERY(`SELECT auction.Id,auction.basePrice,auction.city,auction.description,auction.createdDate,auction.closingDate,bids.userId,bids.bid FROM auction INNER JOIN bids ON auction.Id = bids.auction_Id AND bids.userId=${req.params.id}`).then((response) => {
+		res.send({ type: 'success', data: response })
+	})
+})
+router.post('/getuserbidforauction', async (req, res) => {
+	const userId = req.body.userid
+	const aucId = req.body.auctionId
+	QUERY(`SELECT bid FROM bids WHERE userId=${userId} AND auction_Id=${aucId}`).then((response) => {
+		console.log(response)
+		res.send({ type: 'success', data: response })
+	})
+})
+router.post('/rebid', async (req, res) => {
+	const userId = req.body.userid
+	const aucId = req.body.auctionId
+	const bid = req.body.bid
+
+	QUERY(`UPDATE bids SET bid=${bid} WHERE userId=${userId} AND auction_Id=${aucId}`).then((response) => {
+		console.log(response)
+		res.send({ type: 'success', data: response })
+	})
+})
+router.get('/getallauctions/:id', async (req, res) => {
+	QUERY(`SELECT * FROM auction WHERE userId!=${req.params.id}`).then((response) => {
+		res.send({ type: 'success', data: response })
+	})
+})
 module.exports = router;

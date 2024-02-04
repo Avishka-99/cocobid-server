@@ -84,6 +84,7 @@ async function SELECT_WHERE(table, column, value) {
 	});
 }
 async function QUERY(query) {
+	console.log(query)
 	return new Promise((resolve, reject) => {
 		pool.getConnection((err, connection) => {
 			if (err) {
