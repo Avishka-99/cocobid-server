@@ -72,7 +72,7 @@ router.get('/getbidinfo/:id', async (req, res) => {
 	})
 })
 router.get('/getalluserbids/:id', async (req, res) => {
-	QUERY(`SELECT auction.Id,auction.basePrice,auction.city,auction.description,auction.createdDate,auction.closingDate,bids.userId,bids.bid FROM auction INNER JOIN bids ON auction.Id = bids.auction_Id AND bids.userId=${req.params.id}`).then((response) => {
+	QUERY(`SELECT auction.Id,auction.basePrice,auction.city,auction.description,auction.createdDate,auction.closingDate,auction.status,bids.userId,bids.bid,(SELECT MAX(bids.bid) FROM bids WHERE auction_Id=auction.Id) AS max_bid FROM auction INNER JOIN bids ON auction.Id = bids.auction_Id AND bids.userId=${req.params.id}`).then((response) => {
 		res.send({ type: 'success', data: response })
 	})
 })
