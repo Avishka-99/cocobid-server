@@ -6,7 +6,7 @@ router.use(express.json());
 router.post('/intents', async (req, res) => {
 	try {
 		const paymentIntent = await stripe.paymentIntents.create({
-			amount: 100000,
+			amount: parseInt(req.body.amount),
 			currency: 'lkr',
 			automatic_payment_methods: {
 				enabled: true,
